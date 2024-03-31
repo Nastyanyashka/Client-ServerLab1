@@ -1,1 +1,0 @@
-/usr/bin/c++  -g -Wall -Werror -Wempty-body -Wredundant-move -O2 -rdynamic CMakeFiles/libhv-http.dir/src/HTTPServer.cpp.o CMakeFiles/libhv-http.dir/src/Routers.cpp.o CMakeFiles/libhv-http.dir/src/User.cpp.o CMakeFiles/libhv-http.dir/src/main.cpp.o -o libhv-http  -lssl -lcrypto lib/libhv_static.a -lpthread -lm -ldl -lrt -lstdc++ 
