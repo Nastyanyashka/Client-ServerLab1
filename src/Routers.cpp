@@ -43,10 +43,10 @@ void route::RegisterResources(hv::HttpService &router)
 
         if(flag == false)
         {
-            response["error"] = "Invalid JSON";
+            response["error"] = "Not Found";
             resp->SetBody(response.dump());
             resp->content_type = APPLICATION_JSON;
-            return 400;
+            return 404;
         }
 
         resp->SetBody(response.dump());
@@ -57,17 +57,20 @@ void route::RegisterResources(hv::HttpService &router)
 
     router.GET("/users", [](HttpRequest *req, HttpResponse *resp)
     {
-        nlohmann::json response;
+        nlohmann::json response = nlohmann::json::array();
         if(users.size() == 0)
         {
-            resp->SetBody("Нету пользователей");
+            resp->SetBody("");
               resp->content_type = APPLICATION_JSON;
                return 200;
         }
         else{
         for(unsigned int i=0 ; i<users.size(); i++)
         {
-             response["user" + std::to_string(i)] = "id = " + std::to_string(users[i].GetId()) + " name = " + users[i].GetName();
+            std::unordered_map<std::string, std::string> m;
+            m["id"] = std::to_string(users[i].GetId());
+            m["name"] = users[i].GetName();
+            response.push_back(m);
         }
         }
 
@@ -88,18 +91,21 @@ void route::RegisterResources(hv::HttpService &router)
         {
             if(users[i].GetId() == id)
             {
+                response["id"] = std::to_string(users[i].GetId());
+                response["name"] = users[i].GetName();
                 users.erase(users.begin() + i);
-                 resp->SetBody("Пользователь удален");
+
+                 resp->SetBody(response.dump());
                  resp->content_type = APPLICATION_JSON;
 
                  return 200;
             } 
         }
 
-        resp->SetBody("Пользователь не найден");
+        resp->SetBody("Not Found");
         resp->content_type = APPLICATION_JSON;
 
-        return 200;
+        return 404;
     });
 
     router.POST("/user", [](HttpRequest *req, HttpResponse *resp)
@@ -110,6 +116,10 @@ void route::RegisterResources(hv::HttpService &router)
         try
         {
             request = nlohmann::json::parse(req->body);
+              std::string name = request["name"];
+         User user(name);
+         users.push_back(user);
+
         }
         catch(const std::exception& e)
         {
@@ -118,22 +128,8 @@ void route::RegisterResources(hv::HttpService &router)
             resp->content_type = APPLICATION_JSON;
             return 400;
         }
-
-        // if(request["name"] =="" || request["id"] == "" || std::all_of(request["id"].begin(), request["id"].end(), ::isdigit) == false)
-        // {
-        //      response["error"] = "Invalid JSON2";
-        //     resp->SetBody(response.dump());
-        //     resp->content_type = APPLICATION_JSON;
-        //     return 400;
-        // }
-
-         std::string name = request["name"];
-         std::string idString = request["id"];
-         int id = std::stoi(idString);
-         User user(id,name);
-         users.push_back(user);
-
-        resp->SetBody("Пользователь добавлен");
+       
+        resp->SetBody(request.dump());
         resp->content_type = APPLICATION_JSON;
 
         return 200;

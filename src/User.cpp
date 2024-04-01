@@ -1,5 +1,7 @@
 #include "User.hpp"
 
+int User::count = 0;
+
 int User::GetId()
 {
     return this->userId;
@@ -9,9 +11,10 @@ std::string  User::GetName()
    return this->name;
 }
 
-User::User(int Id, std::string Name)
+User::User(std::string Name)
 {
-    userId = Id;
+    userId = count;
+    count++;
     name = Name;
 }
 

@@ -8,9 +8,10 @@ class User
 private:
 
     std::string name;
+    static int count;
     int userId;
 public:
-    User(int Id,std::string Name);
+    User(std::string Name);
     int GetId();
     std::string GetName();
     ~User();
